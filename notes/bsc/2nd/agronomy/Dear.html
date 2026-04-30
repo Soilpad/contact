@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soilpad Admin | GitHub Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f9fafb; --card-bg: #ffffff; --text-main: #2d3748;
+            --text-muted: #718096; --primary: #2d5a27; --border: #e2e8f0;
+            --overlay: rgba(0, 0, 0, 0.6); --accent: #fbbf24;
+        }
+        body.dark-mode {
+            --bg: #111827; --card-bg: #1f2937; --text-main: #f9fafb;
+            --text-muted: #9ca3af; --border: #374151; --overlay: rgba(0, 0, 0, 0.85);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
+        body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        /* --- Header --- */
+        header { background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 12px 20px; }
+        .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-icon { width: 38px; height: 38px; background: var(--primary); border-radius: 6px 14px 6px 6px; display: flex; justify-content: center; align-items: center; color: white; font-weight: 800; }
+        
+        /* --- Steps & Layout --- */
+        .container { max-width: 600px; margin: 40px auto; padding: 20px; }
+        .step-card { background: var(--card-bg); border-radius: 20px; padding: 30px; border: 1px solid var(--border); display: none; text-align: center; }
+        .step-card.active { display: block; animation: slideIn 0.4s ease; }
+
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .option-card { background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; cursor: pointer; }
+        .option-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .option-card i { font-size: 1.8rem; color: var(--primary); margin-bottom: 10px; display: block; }
+
+        /* --- Custom Popups --- */
+        .modal-overlay { position: fixed; inset: 0; background: var(--overlay); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 5000; }
+        .modal-box { background: var(--card-bg); width: 90%; max-width: 400px; border-radius: 24px; padding: 25px; position: relative; }
+        .close-pop { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        
+        /* --- Progress Bar --- */
+        .progress-container { width: 100%; background: var(--bg); border-radius: 10px; height: 10px; margin: 20px 0; overflow: hidden; display: none; }
+        .progress-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.3s linear; }
+
+        /* --- Folder Select --- */
+        .folder-list { max-height: 150px; overflow-y: auto; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; }
+        .folder-item { padding: 10px; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left; }
+        .folder-item:hover { background: var(--dropdown-bg); }
+
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); outline: none; margin-bottom: 15px; }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo-container" onclick="location.reload()"><div class="logo-icon">S</div><span style="font-weight:700">Admin</span></div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div id="step-home" class="step-card active">
+            <h2>Select Operation</h2>
+            <div class="option-grid">
+                <div class="option-card" onclick="openUpload('notes')"><i class="fas fa-file-pdf"></i>Notes</div>
+                <div class="option-card" onclick="openAds()"><i class="fas fa-ad"></i>Ads</div>
+            </div>
+        </div>
+
+        <div id="step-cat" class="step-card">
+            <h3>Choose Category</h3>
+            <div class="option-grid">
+                <div class="option-card" onclick="selectBsc()"><i class="fas fa-graduation-cap"></i>B.Sc Agri</div>
+                <div class="option-card" onclick="startPath('notes/jet')"><i class="fas fa-pen"></i>JET</div>
+                <div class="option-card" onclick="startPath('syllabus')"><i class="fas fa-book"></i>Syllabus</div>
+            </div>
+        </div>
+
+        <div id="step-bsc" class="step-card">
+            <h3>Year & Sem</h3>
+            <select id="bscMap">
+                <option value="notes/bsc/1st">1st Year - 1st Sem</option>
+                <option value="notes/bsc/2nd">1st Year - 2nd Sem</option>
+                <option value="notes/bsc/3rd">2nd Year - 1st Sem</option>
+                <option value="notes/bsc/4th">2nd Year - 2nd Sem</option>
+                <option value="notes/bsc/5th">3rd Year - 1st Sem</option>
+                <option value="notes/bsc/6th">3rd Year - 2nd Sem</option>
+            </select>
+            <button class="btn-action" onclick="startPath(document.getElementById('bscMap').value)">Next</button>
+        </div>
+
+        <div id="step-final" class="step-card">
+            <p id="curPath" style="color:var(--primary); font-weight:700; margin-bottom:10px;"></p>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="btn-action" style="flex:1" onclick="loadFolders()">Select Folder</button>
+                <button class="btn-action" style="flex:1; background:#6366f1" onclick="openPop('newFolderPop')">New Folder</button>
+            </div>
+            <div class="option-grid">
+                <div class="option-card" onclick="triggerFile()"><i class="fas fa-upload"></i>PDF</div>
+                <div class="option-card" onclick="openPop('htmlPop')"><i class="fas fa-code"></i>HTML</div>
+            </div>
+            <div class="progress-container" id="uploadProgress"><div class="progress-bar" id="pBar"></div></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="folderPop">
+        <div class="modal-box">
+            <span class="close-pop" onclick="closePop('folderPop')">&times;</span>
+            <h3>Choose Folder</h3>
+            <div class="folder-list" id="fItems"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="newFolderPop">
+        <div class="modal-box">
+            <span class="close-pop" onclick="closePop('newFolderPop')">&times;</span>
+            <h3>Folder Name</h3>
+            <input type="text" id="newFolderName" placeholder="e.g. Agronomy">
+            <button class="btn-action" onclick="setFolder(document.getElementById('newFolderName').value)">Create</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="uploadNamePop">
+        <div class="modal-box">
+            <span class="close-pop" onclick="closePop('uploadNamePop')">&times;</span>
+            <h3>Confirm Name</h3>
+            <input type="text" id="finalName">
+            <button class="btn-action" id="startUploadBtn">Upload Now</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="htmlPop">
+        <div class="modal-box">
+            <span class="close-pop" onclick="closePop('htmlPop')">&times;</span>
+            <h3>Add HTML Page</h3>
+            <input type="text" id="htmlName" placeholder="Filename (no .html)">
+            <textarea id="htmlCode" rows="8" placeholder="<html>..."></textarea>
+            <button class="btn-action" onclick="initHtmlUpload()">Publish</button>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(this)">
+
+    <script>
+        const GH = {
+            token: "YOUR_GITHUB_TOKEN", 
+            owner: "soilpad", repo: "contact", branch: "main"
+        };
+
+        let currentBase = "";
+        let selectedFolder = "";
+        let pendingFile = null;
+
+        // --- Navigation ---
+        function go(id) {
+            document.querySelectorAll('.step-card').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+        function openPop(id) { document.getElementById(id).style.display = 'flex'; }
+        function closePop(id) { document.getElementById(id).style.display = 'none'; }
+
+        function openUpload() { go('step-cat'); }
+        function selectBsc() { go('step-bsc'); }
+        function startPath(p) { currentBase = p; updatePathUI(); go('step-final'); }
+        function updatePathUI() { document.getElementById('curPath').innerText = `${currentBase}/${selectedFolder}`; }
+
+        // --- Folder Logic ---
+        async function loadFolders() {
+            const data = await ghReq(currentBase);
+            const items = Array.isArray(data) ? data.filter(i => i.type === 'dir') : [];
+            const list = document.getElementById('fItems');
+            list.innerHTML = items.length ? items.map(i => `<div class="folder-item" onclick="setFolder('${i.name}')">${i.name}</div>`).join('') : '<p>No folders found</p>';
+            openPop('folderPop');
+        }
+
+        function setFolder(name) {
+            selectedFolder = name;
+            updatePathUI();
+            closePop('folderPop'); closePop('newFolderPop');
+        }
+
+        // --- Upload Logic ---
+        function triggerFile() { document.getElementById('fileInput').click(); }
+        
+        function handleFileSelect(input) {
+            if(!input.files[0]) return;
+            pendingFile = input.files[0];
+            document.getElementById('finalName').value = pendingFile.name.replace('.pdf', '');
+            document.getElementById('startUploadBtn').onclick = executePdfUpload;
+            openPop('uploadNamePop');
+        }
+
+        async function executePdfUpload() {
+            const name = document.getElementById('finalName').value;
+            closePop('uploadNamePop');
+            const reader = new FileReader();
+            reader.readAsDataURL(pendingFile);
+            reader.onload = async () => {
+                const base64 = reader.result.split(',')[1];
+                const path = `${currentBase}/${selectedFolder}/${name}.pdf`.replace('//', '/');
+                await githubSync(path, base64, "PDF Upload", true);
+            };
+        }
+
+        function initHtmlUpload() {
+            const name = document.getElementById('htmlName').value;
+            const code = document.getElementById('htmlCode').value;
+            const b64 = btoa(unescape(encodeURIComponent(code)));
+            const path = `${currentBase}/${selectedFolder}/${name}.html`.replace('//', '/');
+            githubSync(path, b64, "HTML Upload", true);
+        }
+
+        // --- API & Sync ---
+        async function ghReq(path, method = "GET", body = null) {
+            const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`;
+            const res = await fetch(url, {
+                method, headers: { "Authorization": `Bearer ${GH.token}` },
+                body: body ? JSON.stringify(body) : null
+            });
+            return res.status === 404 ? {} : res.json();
+        }
+
+        async function githubSync(path, content, msg, isNewFile) {
+            const progress = document.getElementById('uploadProgress');
+            const pBar = document.getElementById('pBar');
+            progress.style.display = 'block';
+            pBar.style.width = '30%';
+
+            // Check SHA
+            const existing = await ghReq(path);
+            pBar.style.width = '60%';
+            
+            const body = { message: msg, content, branch: GH.branch };
+            if(existing.sha) body.sha = existing.sha;
+
+            await ghReq(path, "PUT", body);
+            pBar.style.width = '100%';
+            
+            setTimeout(() => {
+                alert(`File Sync Successful!`);
+                location.reload();
+            }, 500);
+        }
+
+        // --- Ad Fix ---
+        async function openAds() {
+            const data = await ghReq('ad.json');
+            const ads = JSON.parse(atob(data.content));
+            // Your logic to manage ads array, then push using githubSync('ad.json', b64_json, "Update Ads")
+            console.log("Ads loaded:", ads);
+            alert("Ads logic ready. Use githubSync to push JSON updates.");
+        }
+    </script>
+</body>
+</html>
