@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B.Sc. Agriculture - I Semester Syllabus Portal</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #388e3c;
+            --accent: #ffa000;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Animation for Entrance */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-card {
+            background: var(--white);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* Categorization Colors */
+        .cat-skill { border-left: 10px solid #2196f3; }
+        .cat-fundamental { border-left: 10px solid #4caf50; }
+        .cat-social { border-left: 10px solid #9c27b0; }
+        .cat-non-gradial { border-left: 10px solid #ff9800; }
+
+        .dropdown-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            transition: background 0.3s;
+        }
+
+        .dropdown-header:hover {
+            background: var(--light);
+        }
+
+        .dropdown-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .content {
+            display: none;
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .faq-section {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 1rem;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        .icon {
+            transition: transform 0.3s;
+        }
+
+        .active .icon {
+            transform: rotate(180deg);
+        }
+
+        .active-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>I Semester Distribution of Courses</h1>
+    <p>Comprehensive Academic Guide & Syllabus Overview</p>
+</header>
+
+<div class="container">
+    
+    <div class="step-card">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <h2>0. Semester Credit Overview</h2>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Course Code</th>
+                    <th>Credits</th>
+                </tr>
+                <tr><td>Induction</td><td>DIKSHA-111</td><td>1 Week (Non-Gradial)</td></tr>
+                <tr><td>Skill Enhancement</td><td>LPM-111 / PPATH-111</td><td>2(0+2) each</td></tr>
+                <tr><td>Fundamentals</td><td>AGRON, HORT, SSAC</td><td>3(2+1) each</td></tr>
+                <tr><td>Total Credits</td><td>-</td><td>21(11+10) + 1*</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step-card cat-skill">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <div>
+                <span class="badge" style="background:#e3f2fd; color:#2196f3;">Skill Enhancement</span>
+                <h2>1. LPM-111: Poultry Production Technology</h2>
+            </div>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <p><strong>Objective:</strong> Focuses on poultry-based livelihood, farm management, and entrepreneurship.</p>
+            <table>
+                <tr><th>Practical Topic</th><th>Lectures</th></tr>
+                <tr><td>External body parts & Breed Identification</td><td>3</td></tr>
+                <tr><td>Housing Layout & Equipment</td><td>5</td></tr>
+                <tr><td>Egg Management & Hatchery</td><td>4</td></tr>
+                <tr><td>Diseases & Prevention</td><td>3</td></tr>
+            </table>
+            <p><em>Suggested Reading: A Textbook of Animal Husbandry by G.C. Banerjee.</em></p>
+        </div>
+    </div>
+
+    <div class="step-card cat-skill">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <div>
+                <span class="badge" style="background:#e3f2fd; color:#2196f3;">Skill Enhancement</span>
+                <h2>2. PPATH-111: Mushroom Production Technology</h2>
+            </div>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <p><strong>Objective:</strong> Comprehensive understanding of edible fungi cultivation and marketing.</p>
+            <table>
+                <tr><th>Syllabus Highlight</th><th>Lectures</th></tr>
+                <tr><td>Spawn Preparation Techniques</td><td>2</td></tr>
+                <tr><td>Button Mushroom Composting</td><td>2</td></tr>
+                <tr><td>Cultivation of Oyster/Shiitake/Milky</td><td>8</td></tr>
+                <tr><td>Value-added products & Marketing</td><td>3</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step-card cat-social">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <div>
+                <span class="badge" style="background:#f3e5f5; color:#9c27b0;">Social Science</span>
+                <h2>3. AGEXT-111: Rural Sociology & Educational Psychology</h2>
+            </div>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <p><strong>Objective:</strong> Understanding rural society, social groups, and human behavior in extension.</p>
+            <table>
+                <tr><th>Theory Topic</th><th>Lectures</th></tr>
+                <tr><td>Social Stratification (Caste/Class)</td><td>2</td></tr>
+                <tr><td>Social Institutions & Control</td><td>4</td></tr>
+                <tr><td>Leadership & Personality</td><td>4</td></tr>
+                <tr><td>Teaching-Learning Process</td><td>3</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step-card cat-social">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <div>
+                <span class="badge" style="background:#f3e5f5; color:#9c27b0;">Communication</span>
+                <h2>4. AGEXT-112: Communication Skills</h2>
+            </div>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <p><strong>Objective:</strong> Developing oral, written, and non-verbal competence.</p>
+            <ul>
+                <li><strong>Theory:</strong> Models of communication, barriers, and functional grammar.</li>
+                <li><strong>Practical:</strong> Public speaking, CV writing, and group discussions.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="step-card cat-fundamental">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <div>
+                <span class="badge" style="background:#e8f5e9; color:#4caf50;">Core Fundamental</span>
+                <h2>5. AGRON-111: Fundamentals of Agronomy</h2>
+            </div>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <p><strong>Key Concepts:</strong> Tillage, Seeds, Nutrition, and Water Management.</p>
+            <table>
+                <tr><th>Practical Exercise</th><th>Units</th></tr>
+                <tr><td>Identification of Crops/Fertilizers</td><td>1</td></tr>
+                <tr><td>Seed Germination & Viability Tests</td><td>1</td></tr>
+                <li>Measurement of Soil Moisture & Infiltration</td><td>2</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step-card cat-fundamental">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <div>
+                <span class="badge" style="background:#e8f5e9; color:#4caf50;">Core Fundamental</span>
+                <h2>6. SSAC-111: Fundamentals of Soil Science</h2>
+            </div>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <p><strong>Topics:</strong> Rocks/Minerals, Soil Profile, Texture, Structure, and Taxonomy.</p>
+            <p><em>Practical involves: Mechanical analysis, pH determination, and Electrical conductivity.</em></p>
+        </div>
+    </div>
+
+    <div class="step-card cat-non-gradial">
+        <div class="dropdown-header" onclick="toggleDropdown(this)">
+            <div>
+                <span class="badge" style="background:#fff3e0; color:#ff9800;">Non-Gradial</span>
+                <h2>7. NCC/NSS/Yoga & Remedial Biology/Math</h2>
+            </div>
+            <span class="icon">▼</span>
+        </div>
+        <div class="content">
+            <p>These courses focus on character building and bridge-knowledge.</p>
+            <ul>
+                <li><strong>NCC:</strong> Drill, National Integration, and Discipline.</li>
+                <li><strong>Yoga:</strong> Football, Basketball, Kabaddi skills.</li>
+                <li><strong>Math/Bio:</strong> Algebra/Matrices or Diversity of Life/Cell Division.</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<section class="faq-section">
+    <div class="faq-container">
+        <h2>Student FAQ - Common Questions</h2>
+        <div class="faq-item">
+            <p class="faq-question">Q: What is a "Non-Gradial" course?</p>
+            <p>A: These are courses like NSS, NCC, or Induction (DIKSHA) that are mandatory to attend and pass, but their marks/credits are not added to your final percentage calculation.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-question">Q: How many practical classes will I have for Poultry Production?</p>
+            <p>A: According to the syllabus, there are 32 practical sessions planned covering everything from breed identification to economics.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-question">Q: What is the ratio of Theory to Practical in Fundamentals of Agronomy?</p>
+            <p>A: The course is 3(2+1), meaning you have 2 theory lectures and 1 practical session per week.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-question">Q: Do I need to study both Math and Biology?</p>
+            <p>A: No, the course is listed as MATH/BIO-111, typically depending on your background in higher secondary school.</p>
+        </div>
+    </div>
+</section>
+
+<script>
+    function toggleDropdown(element) {
+        // Toggle the 'active' class on the header
+        element.classList.toggle('active');
+        
+        // Find the next sibling which is the content div
+        const content = element.nextElementSibling;
+        
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
