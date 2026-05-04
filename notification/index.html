@@ -14,42 +14,44 @@
             --bg: #111827; --card: #1f2937; --text: #f9fafb; --border: #374151;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
-        body { background: var(--bg); color: var(--text); padding-top: 30px; }
+        body { background: var(--bg); color: var(--text); padding: 20px 0; }
 
-        .container { max-width: 700px; margin: 0 auto; padding: 0 20px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
 
         /* --- Search Bar --- */
-        .search-wrapper { position: sticky; top: 20px; z-index: 100; margin-bottom: 30px; }
+        .search-wrapper { margin-bottom: 20px; position: relative; }
         .search-box {
-            width: 100%; padding: 16px 20px 16px 50px;
+            width: 100%; padding: 15px 20px 15px 45px;
             background: var(--card); border: 2px solid var(--border);
-            border-radius: 18px; font-size: 1rem; color: var(--text);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); outline: none;
+            border-radius: 15px; font-size: 1rem; color: var(--text); outline: none;
         }
         .search-box:focus { border-color: var(--primary); }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); }
 
-        /* --- Notification Items --- */
-        .notif-label { font-size: 0.9rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
-        
-        #notifList { display: flex; flex-direction: column; gap: 12px; }
-        .notif-card { 
-            background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 16px; 
-            display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit;
-            transition: 0.2s ease;
+        /* --- Preview Window --- */
+        #previewContainer {
+            display: none; background: var(--card); border: 2px solid var(--primary);
+            border-radius: 18px; margin-bottom: 30px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .notif-card:hover { border-color: var(--primary); background: var(--bg); transform: scale(1.01); }
-        
-        .notif-icon { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .notif-content { flex: 1; }
-        .notif-title { font-weight: 700; font-size: 1rem; margin-bottom: 2px; text-transform: capitalize; }
-        .notif-tag { font-size: 0.75rem; background: var(--accent); color: #000; padding: 2px 8px; border-radius: 4px; font-weight: 800; }
+        .preview-header { padding: 10px 15px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; }
+        #previewFrame { width: 100%; height: 500px; border: none; background: white; }
 
-        /* --- States --- */
-        .loading-state { text-align: center; color: var(--muted); margin-top: 50px; }
-        .no-results { text-align: center; padding: 40px; color: var(--muted); }
+        /* --- List View --- */
+        .notif-label { font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        #notifList { display: flex; flex-direction: column; gap: 10px; }
+        .notif-card { 
+            background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; 
+            display: flex; align-items: center; gap: 15px; cursor: pointer;
+        }
+        .notif-card:hover { border-color: var(--primary); transform: translateX(5px); }
+        .notif-card.active { border-left: 5px solid var(--accent); background: var(--bg); }
         
-        footer { text-align: center; padding: 40px; color: var(--muted); font-size: 12px; }
+        .notif-icon { width: 35px; height: 35px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .notif-content { flex: 1; }
+        .notif-title { font-weight: 700; font-size: 0.95rem; text-transform: capitalize; }
+        
+        .loading-text { text-align: center; padding: 20px; color: var(--muted); }
     </style>
 </head>
 <body>
@@ -57,81 +59,100 @@
 <div class="container">
     <div class="search-wrapper">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="searchInput" class="search-box" placeholder="Search notifications...">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search notification name...">
     </div>
 
-    <span class="notif-label">Recent Updates</span>
-    
+    <div id="previewContainer">
+        <div class="preview-header">
+            <span id="previewTitle">Preview</span>
+            <i class="fas fa-times" style="cursor:pointer" onclick="closePreview()"></i>
+        </div>
+        <iframe id="previewFrame"></iframe>
+    </div>
+
+    <span class="notif-label">Files in /notification</span>
     <div id="notifList">
-        <div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i> Fetching notifications...</div>
+        <div class="loading-text">Scanning folder...</div>
     </div>
 </div>
 
-<footer>© 2026 Soilpad. Quick Access Portal.</footer>
-
 <script>
-    const REPO_OWNER = "soilpad";
-    const REPO_NAME = "contact";
-    const FOLDER_PATH = "notification";
-    const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}`;
+    const REPO_URL = "https://api.github.com/repos/soilpad/contact/contents/notification";
+    const RAW_BASE = "https://raw.githubusercontent.com/soilpad/contact/main/notification/";
     
-    let allNotifications = [];
+    let notifications = [];
 
-    async function getNotifications() {
+    async function loadNotifications() {
         try {
-            const response = await fetch(API_URL);
-            let files = await response.json();
+            const res = await fetch(REPO_URL);
+            const data = await res.json();
+            
+            // Filter and Sort
+            notifications = data.filter(f => 
+                f.name.endsWith('.html') && f.name !== 'index.html'
+            ).reverse();
 
-            // Filter out index.html and non-html files
-            allNotifications = files.filter(f => 
-                f.name.toLowerCase().endsWith('.html') && 
-                f.name.toLowerCase() !== 'index.html'
-            ).reverse(); // Latest files first
+            renderList(notifications);
 
-            renderList(allNotifications);
-        } catch (error) {
-            document.getElementById('notifList').innerHTML = `<div class="no-results">Failed to load.</div>`;
+            // Check if URL already has a file requested
+            const urlFile = new URLSearchParams(window.location.search).get('n');
+            if(urlFile) openPreview(urlFile);
+
+        } catch (e) {
+            document.getElementById('notifList').innerHTML = "Error loading files.";
         }
     }
 
     function renderList(list) {
         const container = document.getElementById('notifList');
-        if (list.length === 0) {
-            container.innerHTML = `<div class="no-results">No notifications found matching your search.</div>`;
-            return;
-        }
-
-        container.innerHTML = list.map(file => {
-            const cleanName = file.name.replace('.html', '').replace(/-/g, ' ');
-            const viewerURL = `notification.html?n=${file.name.replace('.html', '')}`;
-            
+        container.innerHTML = list.length ? list.map(f => {
+            const nameOnly = f.name.replace('.html', '');
             return `
-                <a href="${viewerURL}"  class="notif-card">
-                    <div class="notif-icon"><i class="fas fa-bell"></i></div>
+                <div class="notif-card" onclick="openPreview('${nameOnly}')">
+                    <div class="notif-icon"><i class="fas fa-file-code"></i></div>
                     <div class="notif-content">
-                        <div class="notif-title">${cleanName}</div>
-                        <span class="notif-tag">NEW</span>
+                        <div class="notif-title">${nameOnly.replace(/-/g, ' ')}</div>
                     </div>
-                    <i class="fas fa-external-link-alt" style="color:var(--muted); font-size:0.8rem"></i>
-                </a>
+                    <i class="fas fa-eye" style="color:var(--muted)"></i>
+                </div>
             `;
-        }).join('');
+        }).join('') : "No results found.";
+    }
+
+    function openPreview(fileName) {
+        const fullFileName = fileName.endsWith('.html') ? fileName : fileName + ".html";
+        const frame = document.getElementById('previewFrame');
+        const container = document.getElementById('previewContainer');
+        const title = document.getElementById('previewTitle');
+
+        // Update UI
+        title.innerText = "Viewing: " + fileName.replace(/-/g, ' ');
+        container.style.display = 'block';
+        frame.src = RAW_BASE + fullFileName;
+
+        // Update URL without refreshing
+        window.history.pushState({}, '', `?n=${fileName}`);
+        
+        // Scroll to preview
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closePreview() {
+        document.getElementById('previewContainer').style.display = 'none';
+        window.history.pushState({}, '', window.location.pathname);
     }
 
     // Search Logic
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
-        const filtered = allNotifications.filter(n => 
-            n.name.toLowerCase().includes(term)
-        );
+        const filtered = notifications.filter(n => n.name.toLowerCase().includes(term));
         renderList(filtered);
     });
 
-    // Run on start
-    getNotifications();
-
-    // Preserve dark mode from localStorage if it exists
+    // Dark Mode Support
     if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+    loadNotifications();
 </script>
 </body>
 </html>
