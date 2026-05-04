@@ -14,145 +14,170 @@
             --bg: #111827; --card: #1f2937; --text: #f9fafb; --border: #374151;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; transition: background 0.3s; }
-        body { background: var(--bg); color: var(--text); padding: 20px 0; }
+        body { background: var(--bg); color: var(--text); padding: 15px 0; }
 
-        .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 15px; }
 
         /* --- Search Bar --- */
-        .search-wrapper { margin-bottom: 20px; position: relative; }
+        .search-area { margin-bottom: 20px; position: sticky; top: 10px; z-index: 100; }
         .search-box {
-            width: 100%; padding: 15px 20px 15px 45px;
+            width: 100%; padding: 14px 20px 14px 45px;
             background: var(--card); border: 2px solid var(--border);
-            border-radius: 15px; font-size: 1rem; color: var(--text); outline: none;
+            border-radius: 12px; font-size: 1rem; color: var(--text); outline: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .search-box:focus { border-color: var(--primary); }
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); }
 
-        /* --- Preview Window --- */
-        #previewContainer {
+        /* --- Live Preview Panel --- */
+        #previewBox {
             display: none; background: var(--card); border: 2px solid var(--primary);
-            border-radius: 18px; margin-bottom: 30px; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 16px; margin-bottom: 25px; overflow: hidden;
+            animation: slideDown 0.4s ease-out;
         }
-        .preview-header { padding: 10px 15px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; }
-        #previewFrame { width: 100%; height: 500px; border: none; background: white; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .preview-bar { padding: 12px 18px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        #previewFrame { width: 100%; height: 450px; border: none; background: white; }
 
-        /* --- List View --- */
-        .notif-label { font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; display: block; }
-        #notifList { display: flex; flex-direction: column; gap: 10px; }
-        .notif-card { 
-            background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; 
-            display: flex; align-items: center; gap: 15px; cursor: pointer;
+        /* --- File List --- */
+        .list-header { font-size: 0.85rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin: 10px 0; display: block; letter-spacing: 0.5px; }
+        
+        #notifList { display: flex; flex-direction: column; gap: 8px; }
+        .notif-item { 
+            background: var(--card); border: 1px solid var(--border); padding: 12px 16px; border-radius: 12px; 
+            display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s;
         }
-        .notif-card:hover { border-color: var(--primary); transform: translateX(5px); }
-        .notif-card.active { border-left: 5px solid var(--accent); background: var(--bg); }
+        .notif-item:hover { border-color: var(--primary); background: var(--bg); }
+        .notif-item.active { border-left: 4px solid var(--accent); background: var(--bg); }
         
-        .notif-icon { width: 35px; height: 35px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-        .notif-content { flex: 1; }
-        .notif-title { font-weight: 700; font-size: 0.95rem; text-transform: capitalize; }
-        
-        .loading-text { text-align: center; padding: 20px; color: var(--muted); }
+        .icon-circle { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .info { flex: 1; }
+        .title { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+        .new-badge { font-size: 0.65rem; background: var(--accent); color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 8px; }
+
+        .loader-text { text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; }
+        .close-btn { cursor: pointer; padding: 5px; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="search-wrapper">
+    <div class="search-area">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="searchInput" class="search-box" placeholder="Search notification name...">
+        <input type="text" id="searchInp" class="search-box" placeholder="Search notification...">
     </div>
 
-    <div id="previewContainer">
-        <div class="preview-header">
-            <span id="previewTitle">Preview</span>
-            <i class="fas fa-times" style="cursor:pointer" onclick="closePreview()"></i>
+    <div id="previewBox">
+        <div class="preview-bar">
+            <span id="pTitle">Previewing File</span>
+            <div class="close-btn" onclick="hidePreview()"><i class="fas fa-times"></i></div>
         </div>
-        <iframe id="previewFrame"></iframe>
+        <iframe id="previewFrame" src="about:blank"></iframe>
     </div>
 
-    <span class="notif-label">Files in /notification</span>
+    <span class="list-header">All Notifications (Newest First)</span>
     <div id="notifList">
-        <div class="loading-text">Scanning folder...</div>
+        <div class="loader-text"><i class="fas fa-spinner fa-spin"></i> Checking GitHub for updates...</div>
     </div>
 </div>
 
 <script>
-    const REPO_URL = "https://api.github.com/repos/soilpad/contact/contents/notification";
-    const RAW_BASE = "https://raw.githubusercontent.com/soilpad/contact/main/notification/";
+    const API_URL = "https://api.github.com/repos/soilpad/contact/contents/notification";
+    const RAW_URL = "https://raw.githubusercontent.com/soilpad/contact/main/notification/";
     
-    let notifications = [];
+    let allFiles = [];
 
-    async function loadNotifications() {
+    async function fetchUpdates() {
         try {
-            const res = await fetch(REPO_URL);
-            const data = await res.json();
+            const response = await fetch(API_URL);
+            const data = await response.json();
             
-            // Filter and Sort
-            notifications = data.filter(f => 
-                f.name.endsWith('.html') && f.name !== 'index.html'
-            ).reverse();
+            // 1. Filter: .html files only and exclude index.html
+            // 2. Sort: Latest uploaded (GitHub usually returns alphabetical, we reverse to get newest if named by date/number)
+            allFiles = data.filter(item => 
+                item.name.endsWith('.html') && item.name !== 'index.html'
+            ).reverse(); 
 
-            renderList(notifications);
+            displayList(allFiles);
 
-            // Check if URL already has a file requested
-            const urlFile = new URLSearchParams(window.location.search).get('n');
-            if(urlFile) openPreview(urlFile);
+            // Auto-open if ?n= is in URL
+            const urlParam = new URLSearchParams(window.location.search).get('n');
+            if(urlParam) showPreview(urlParam);
 
-        } catch (e) {
-            document.getElementById('notifList').innerHTML = "Error loading files.";
+        } catch (err) {
+            document.getElementById('notifList').innerHTML = "Failed to load files from GitHub.";
         }
     }
 
-    function renderList(list) {
-        const container = document.getElementById('notifList');
-        container.innerHTML = list.length ? list.map(f => {
-            const nameOnly = f.name.replace('.html', '');
+    function displayList(files) {
+        const listDiv = document.getElementById('notifList');
+        if(files.length === 0) {
+            listDiv.innerHTML = "<p class='loader-text'>No notifications found.</p>";
+            return;
+        }
+
+        listDiv.innerHTML = files.map((file, index) => {
+            const shortName = file.name.replace('.html', '');
+            const isLatest = index === 0 ? '<span class="new-badge">LATEST</span>' : '';
+            
             return `
-                <div class="notif-card" onclick="openPreview('${nameOnly}')">
-                    <div class="notif-icon"><i class="fas fa-file-code"></i></div>
-                    <div class="notif-content">
-                        <div class="notif-title">${nameOnly.replace(/-/g, ' ')}</div>
+                <div class="notif-item" onclick="showPreview('${shortName}')">
+                    <div class="icon-circle"><i class="fas fa-bullhorn"></i></div>
+                    <div class="info">
+                        <div class="title">${shortName.replace(/-/g, ' ')} ${isLatest}</div>
                     </div>
-                    <i class="fas fa-eye" style="color:var(--muted)"></i>
+                    <i class="fas fa-chevron-right" style="color:var(--muted)"></i>
                 </div>
             `;
-        }).join('') : "No results found.";
+        }).join('');
     }
 
-    function openPreview(fileName) {
-        const fullFileName = fileName.endsWith('.html') ? fileName : fileName + ".html";
-        const frame = document.getElementById('previewFrame');
-        const container = document.getElementById('previewContainer');
-        const title = document.getElementById('previewTitle');
+    function showPreview(name) {
+        const pBox = document.getElementById('previewBox');
+        const pFrame = document.getElementById('previewFrame');
+        const pTitle = document.getElementById('pTitle');
 
-        // Update UI
-        title.innerText = "Viewing: " + fileName.replace(/-/g, ' ');
-        container.style.display = 'block';
-        frame.src = RAW_BASE + fullFileName;
-
-        // Update URL without refreshing
-        window.history.pushState({}, '', `?n=${fileName}`);
+        pTitle.innerText = "Viewing: " + name.replace(/-/g, ' ');
+        pBox.style.display = 'block';
         
-        // Scroll to preview
-        container.scrollIntoView({ behavior: 'smooth' });
+        // Load RAW HTML content directly into the iframe
+        pFrame.src = RAW_BASE_URL_FOR_NOTIF(name);
+
+        // Update URL to look professional
+        window.history.pushState({}, '', `?n=${name}`);
+        
+        // Scroll to the preview box so user sees it instantly
+        pBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function closePreview() {
-        document.getElementById('previewContainer').style.display = 'none';
+    function RAW_BASE_URL_FOR_NOTIF(name) {
+        return RAW_URL + name + ".html";
+    }
+
+    function hidePreview() {
+        document.getElementById('previewBox').style.display = 'none';
+        document.getElementById('previewFrame').src = "about:blank";
         window.history.pushState({}, '', window.location.pathname);
     }
 
-    // Search Logic
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = notifications.filter(n => n.name.toLowerCase().includes(term));
-        renderList(filtered);
+    // Search Filtering
+    document.getElementById('searchInp').addEventListener('input', function(e) {
+        const val = e.target.value.toLowerCase();
+        const filtered = allFiles.filter(f => f.name.toLowerCase().includes(val));
+        displayList(filtered);
     });
 
-    // Dark Mode Support
+    // Handle back/forward browser buttons
+    window.onpopstate = () => {
+        const n = new URLSearchParams(window.location.search).get('n');
+        if(n) showPreview(n); else hidePreview();
+    };
+
+    // Day/Night Sync
     if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
-    loadNotifications();
+    fetchUpdates();
 </script>
 </body>
 </html>
