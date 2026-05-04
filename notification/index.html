@@ -100,7 +100,7 @@
             const redirectUrl = `notification.html?n=${fileNameClean}`;
 
             return `
-                <a href="${redirectUrl}" class="notif-link">
+                <a href="${redirectUrl}" target="_blank" class="notif-link">
                     <div class="notif-icon"><i class="fas fa-file-alt"></i></div>
                     <div class="notif-info">
                         <div class="notif-name">${fileNameClean.replace(/-/g, ' ')} ${isNew}</div>
